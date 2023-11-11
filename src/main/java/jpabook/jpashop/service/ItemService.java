@@ -27,4 +27,5 @@ public class ItemService {
         return itemRepository.findOne(itemId);
     }
 
+    //== 생성 메서드 ==//
 }
