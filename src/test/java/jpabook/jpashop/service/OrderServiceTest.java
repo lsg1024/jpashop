@@ -21,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class OrderServiceTest {
 
-    @Autowired
-    EntityManager em;
+    @Autowired EntityManager em;
     @Autowired OrderService orderService;
     @Autowired
     OrderRepository orderRepository;
