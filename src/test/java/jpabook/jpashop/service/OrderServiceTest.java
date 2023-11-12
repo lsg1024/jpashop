@@ -23,8 +23,7 @@ class OrderServiceTest {
 
     @Autowired EntityManager em;
     @Autowired OrderService orderService;
-    @Autowired
-    OrderRepository orderRepository;
+    @Autowired OrderRepository orderRepository;
 
     @Test
     void itemOrder() throws Exception {
