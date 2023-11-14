@@ -1,6 +1,7 @@
 package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domin.Order;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -26,7 +27,7 @@ public class OrderRepository {
     }
 
     // JPAQL 타입
-    public List<javax.persistence.criteria.Order> findAllByString(OrderSearch orderSearch) {
+    public List<Order> findAllByString(OrderSearch orderSearch) {
 
         String jpql = "select o from Order o join o.member m";
         boolean isFirstCondition = true;
@@ -53,7 +54,7 @@ public class OrderRepository {
             jpql += " m.name like :name";
         }
 
-        TypedQuery<javax.persistence.criteria.Order> query = em.createQuery(jpql, javax.persistence.criteria.Order.class)
+        TypedQuery<Order> query = em.createQuery(jpql, Order.class)
                 .setMaxResults(1000);
 
         if (orderSearch.getOrderStatus() != null) {
@@ -69,10 +70,10 @@ public class OrderRepository {
     /**
      * JPA Criteria
      */
-    public List<javax.persistence.criteria.Order> findAllByCriteria(OrderSearch orderSearch) {
+    public List<Order> findAllByCriteria(OrderSearch orderSearch) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<javax.persistence.criteria.Order> cq = cb.createQuery(javax.persistence.criteria.Order.class);
-        Root<javax.persistence.criteria.Order> o = cq.from(javax.persistence.criteria.Order.class);
+        CriteriaQuery<Order> cq = cb.createQuery(Order.class);
+        Root<Order> o = cq.from(Order.class);
         Join<Object, Object> m = o.join("member", JoinType.INNER);
 
         List<Predicate> criteria = new ArrayList<>();
@@ -90,8 +91,9 @@ public class OrderRepository {
         }
 
         cq.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
-        TypedQuery<javax.persistence.criteria.Order> query = em.createQuery(cq).setMaxResults(1000);
+        TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000);
         return query.getResultList();
     }
+
 
 }
