@@ -5,6 +5,8 @@ import jpabook.jpashop.domin.Order;
 import jpabook.jpashop.domin.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
     // 현재 상태에서는 프록시 객체에는 비어있고 DB 데이터는 order 만 불러오기 때문에 호출되지 않는다
     // 또한 Hibernate 를 통해 호출에 성공하더라도 lazy load 값은 null 처리되서 나온다
@@ -42,6 +45,7 @@ public class OrderSimpleApiController {
         return result;
     }
 
+    // 모든 쿼리를 패치 조인으로 한번에 호출 -> 다른 부분에서도 활용할 수 있는 재사용성이 있다
     @GetMapping("/api/v3/simple-orders")
     public List<SimpleOrderDto> orderV3() {
 
@@ -50,6 +54,13 @@ public class OrderSimpleApiController {
                 .collect(Collectors.toList());
 
         return result;
+    }
+
+    // 필요한 부분만 쿼리로 호출 -> 재사용이 어려운 점이 있다
+    // Repository는 순수한 엔티티를 조회하는데 사용해야 하므로 쿼리 DTO 부분을 분리해주었다
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> ordersV4() {
+        return orderSimpleQueryRepository.findOrderDtos();
     }
 
     @Data
@@ -61,11 +72,11 @@ public class OrderSimpleApiController {
         private Address address;
 
         public SimpleOrderDto(Order order) {
-            orderId = order.getMember().getId();
+            orderId = order.getId();
             name = order.getMember().getName();
             orderDate = order.getOrderDate();
             orderStatus = order.getStatus();
-            address = order.getDelivery().getAddress();
+            address = order.getMember().getAddress();
         }
     }
 
